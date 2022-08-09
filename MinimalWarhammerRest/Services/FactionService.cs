@@ -16,7 +16,7 @@ namespace MinimalWarhammerRest.Services
         {
             _context = context;
         }
-        public async Task<Result<bool>> Create(string name)
+        public async Task<LanguageExt.Common.Result<bool>> Create(string name)
         {
             var exists = await _context.Factions.SingleOrDefaultAsync(f => f.FactionName == name);
 
@@ -29,7 +29,7 @@ namespace MinimalWarhammerRest.Services
 
         }
 
-        public async Task<Result<bool>> Delete(int id)
+        public async Task<LanguageExt.Common.Result<bool>> Delete(int id)
         {
             var exists = await _context.Factions.FindAsync(id);
 
@@ -45,17 +45,17 @@ namespace MinimalWarhammerRest.Services
 
         }
 
-        public async Task<Result<FactionDTO>> Get(int id)
+        public async Task<LanguageExt.Common.Result<FactionDTO>> Get(int id)
         {
             var result = await _context.Factions.FindAsync(id);
 
             if (result is not null)
             {
                 var faction = new FactionDTO(result.FactionId, result.FactionName);
-                return new Result<FactionDTO>(faction);
+                return new LanguageExt.Common.Result<FactionDTO>(faction);
             }
             var ex = new FactionNotFoundException(id);
-            return new Result<FactionDTO>(ex);
+            return new LanguageExt.Common.Result<FactionDTO>(ex);
         }
 
         public async Task<IEnumerable<FactionDTO>> GetAll()

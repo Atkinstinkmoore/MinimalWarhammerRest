@@ -15,21 +15,21 @@ namespace MinimalWarhammerRest.Services
             _factionService = factionService;
             _cache = cache;
         }
-        public Task<Result<bool>> Create(string name)
+        public Task<LanguageExt.Common.Result<bool>> Create(string name)
         {
             return _factionService.Create(name);
         }
 
-        public Task<Result<bool>> Delete(int id)
+        public Task<LanguageExt.Common.Result<bool>> Delete(int id)
         {
             return _factionService.Delete(id);
         }
 
-        public async Task<Result<FactionDTO>> Get(int id)
+        public async Task<LanguageExt.Common.Result<FactionDTO>> Get(int id)
         {
             var isCached = _cache.TryGetValue("faction" + id.ToString(), out FactionDTO value);
             if(isCached)
-                return new Result<FactionDTO>(value);
+                return new LanguageExt.Common.Result<FactionDTO>(value);
 
             var result = await _factionService.Get(id);
             return result.Match(r =>

@@ -7,8 +7,8 @@ namespace MinimalWarhammerRest.Services
 {
     public interface IMiniatureService
     {
-        Task<Result<MiniatureDTO>> Get(int id);
+        Task<LanguageExt.Common.Result<MiniatureDTO>> Get(int id);
         Task<IEnumerable<MiniatureDTO>> GetAll();
-        Task<Result<bool>> Create(CreateMiniatureRequest req);
+        Task<LanguageExt.Common.Result<bool>> Create(CreateMiniatureRequest req);
     }
 }

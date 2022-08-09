@@ -17,7 +17,7 @@ namespace MinimalWarhammerRest.Services
             _context = context;
         }
 
-        public async Task<Result<bool>> Create(CreateMiniatureRequest req)
+        public async Task<LanguageExt.Common.Result<bool>> Create(CreateMiniatureRequest req)
         {
             var exists = _context.Figures.SingleOrDefault(m => m.FigureName.ToUpper() == req.Name.ToUpper());
 
@@ -31,14 +31,14 @@ namespace MinimalWarhammerRest.Services
                 var toSave = new Figure() { FigureName = req.Name, Amount = (int)req.Amount, FactionId = req.FactionId, SubfactionId = req.SubfactionId };
                 _context.Figures.Add(toSave);
                 var _ = await _context.SaveChangesAsync();
-                return new Result<bool>(true);
+                return new LanguageExt.Common.Result<bool>(true);
             }
             var ex = new CouldNotCreateException(nameof(Faction));
-            return new Result<bool>(ex);
+            return new LanguageExt.Common.Result<bool>(ex);
 
         }
 
-        public async Task<Result<MiniatureDTO>> Get(int id)
+        public async Task<LanguageExt.Common.Result<MiniatureDTO>> Get(int id)
         {
             var result = await _context.Figures.FindAsync(id);
 
@@ -46,10 +46,10 @@ namespace MinimalWarhammerRest.Services
             {
                 await _context.Factions.LoadAsync();
                 var mini = new MiniatureDTO(result.FigureId, result.FigureName, result.Amount, result.Faction.FactionName, result.Subfaction.FactionName);
-                return new Result<MiniatureDTO>(mini);
+                return new LanguageExt.Common.Result<MiniatureDTO>(mini);
             }
             var ex = new MiniatureNotFoundException(id);
-            return new Result<MiniatureDTO>(ex);
+            return new LanguageExt.Common.Result<MiniatureDTO>(ex);
 
         }
 

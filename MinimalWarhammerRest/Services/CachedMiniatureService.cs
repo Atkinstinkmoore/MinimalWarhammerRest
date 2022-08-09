@@ -15,16 +15,16 @@ namespace MinimalWarhammerRest.Services
             _service = service;
             _cache = cache;
         }
-        public Task<Result<bool>> Create(CreateMiniatureRequest req)
+        public Task<LanguageExt.Common.Result<bool>> Create(CreateMiniatureRequest req)
         {
             return _service.Create(req);
         }
 
-        public async Task<Result<MiniatureDTO>> Get(int id)
+        public async Task<LanguageExt.Common.Result<MiniatureDTO>> Get(int id)
         {
             var isCached = _cache.TryGetValue("miniature" + id.ToString(), out MiniatureDTO value);
             if (isCached)
-                return new Result<MiniatureDTO>(value);
+                return new LanguageExt.Common.Result<MiniatureDTO>(value);
             var result = await _service.Get(id);
 
             return result.Match(r =>

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using MinimalWarhammerRest.Endpoints;
 using MinimalWarhammerRest.Models;
 using MinimalWarhammerRest.Services;
@@ -17,6 +16,7 @@ builder.Services.AddScoped<MiniatureService>();
 builder.Services.AddScoped<IMiniatureService>(x => new CachedMiniatureService(x.GetRequiredService<MiniatureService>(), x.GetRequiredService<IMemoryCache>()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddGraphQLServer().AddQueryType<Query>();
 
 var app = builder.Build();
 
@@ -29,6 +29,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.MapGraphQL("/graphql");
 
 app.Run();
