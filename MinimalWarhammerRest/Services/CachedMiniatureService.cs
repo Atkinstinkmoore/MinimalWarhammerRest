@@ -3,43 +3,43 @@ using Microsoft.Extensions.Caching.Memory;
 using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Requests;
 
-namespace MinimalWarhammerRest.Services
+namespace MinimalWarhammerRest.Services;
+
+public class CachedMiniatureService : IMiniatureService
 {
-    public class CachedMiniatureService : IMiniatureService
+    private readonly IMiniatureService _service;
+    private readonly IMemoryCache _cache;
+
+    public CachedMiniatureService(IMiniatureService service, IMemoryCache cache)
     {
-        private readonly IMiniatureService _service;
-        private readonly IMemoryCache _cache;
+        _service = service;
+        _cache = cache;
+    }
 
-        public CachedMiniatureService(IMiniatureService service, IMemoryCache cache)
-        {
-            _service = service;
-            _cache = cache;
-        }
-        public Task<Result<bool>> Create(CreateMiniatureRequest req)
-        {
-            return _service.Create(req);
-        }
+    public Task<Result<bool>> Create(CreateMiniatureRequest req)
+    {
+        return _service.Create(req);
+    }
 
-        public async Task<Result<MiniatureDTO>> Get(int id)
-        {
-            var isCached = _cache.TryGetValue("miniature" + id.ToString(), out MiniatureDTO value);
-            if (isCached)
-                return new Result<MiniatureDTO>(value);
-            var result = await _service.Get(id);
+    public async Task<Result<MiniatureDTO>> Get(int id)
+    {
+        var isCached = _cache.TryGetValue("miniature" + id.ToString(), out MiniatureDTO value);
+        if (isCached)
+            return new Result<MiniatureDTO>(value);
+        var result = await _service.Get(id);
 
-            return result.Match(r =>
-            {
-                _cache.Set("miniature" + id.ToString(), r, TimeSpan.FromMinutes(5));
-                return result;
-            }, ex =>
-            {
-                return result;
-            });
-        }
-
-        public Task<IEnumerable<MiniatureDTO>> GetAll()
+        return result.Match(r =>
         {
-            return _service.GetAll();
-        }
+            _cache.Set("miniature" + id.ToString(), r, TimeSpan.FromMinutes(5));
+            return result;
+        }, ex =>
+        {
+            return result;
+        });
+    }
+
+    public Task<IEnumerable<MiniatureDTO>> GetAll()
+    {
+        return _service.GetAll();
     }
 }
