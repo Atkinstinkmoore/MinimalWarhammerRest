@@ -6,22 +6,22 @@ public struct ResponseDTO<T>
 {
     public T Data { get; init; }
     public DateTime TimeStamp { get; } = DateTime.UtcNow;
-    public string requestId { get; set; }
+    public string RequestId { get; set; }
 
     public ResponseDTO(T data)
     {
         Data = data;
-        requestId = Activity.Current.TraceId.ToString();
+        RequestId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
     }
 }
 
 public struct EmptyResponseDTO
 {
     public DateTime TimeStamp { get; } = DateTime.UtcNow;
-    public string requestId { get; init; }
+    public string RequestId { get; init; }
     public EmptyResponseDTO()
     {
-        requestId = Activity.Current.TraceId.ToString();
+        RequestId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
     }
 
 }

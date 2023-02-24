@@ -8,23 +8,23 @@ namespace MinimalWarhammerRest.Endpoints;
 
 public static class MiniatureEndpoint
 {
-    public static void  MapMiniatureEndpoints(this WebApplication app)
+    public static void MapMiniatureEndpoints(this WebApplication app)
     {
-        app.MapGet("getmini/{id}", GetMiniature).Produces(200, typeof(ResponseDTO<MiniatureDTO>)).Produces(404, typeof(ResponseDTO<string>));
-        app.MapGet("getallminis", GetAllMiniatures).Produces(200, typeof(ResponseDTO<IEnumerable<MiniatureDTO>>));
-        app.MapPost("newmini", CreateMiniature).Produces(201, typeof(EmptyResponseDTO)).Produces(400, typeof(ResponseDTO<string>));
+        app.MapGet("api/mini/{id:int}", GetMiniature).Produces(200, typeof(ResponseDTO<MiniatureDTO>)).Produces(404, typeof(ResponseDTO<string>));
+        app.MapPost("api/mini", CreateMiniature).Produces(201, typeof(EmptyResponseDTO)).Produces(400, typeof(ResponseDTO<string>));
+        app.MapGet("api/all-minis", GetAllMiniatures).Produces(200, typeof(ResponseDTO<IEnumerable<MiniatureDTO>>));
     }
 
     public static async Task<IResult> GetMiniature(IMiniatureService service, int id)
     {
-        var result = await service.Get(id).ConfigureAwait(false);
+        var result = await service.Get(id);
 
         return result.Match(r =>
         {
             return Results.Ok(new ResponseDTO<MiniatureDTO>(r));
         }, ex =>
         {
-            if(ex is MiniatureNotFoundException)
+            if (ex is MiniatureNotFoundException)
                 return Results.NotFound(new ResponseDTO<string>(ex.Message));
 
             return Results.StatusCode(500);
@@ -33,14 +33,14 @@ public static class MiniatureEndpoint
 
     public static async Task<IResult> GetAllMiniatures(IMiniatureService service)
     {
-        var result = await service.GetAll().ConfigureAwait(false);
+        var result = await service.GetAll();
 
         return Results.Ok(new ResponseDTO<IEnumerable<MiniatureDTO>>(result));
     }
 
     public static async Task<IResult> CreateMiniature(IMiniatureService service, CreateMiniatureRequest req)
     {
-        var result = await service.Create(req).ConfigureAwait(false);
+        var result = await service.Create(req);
 
         return result.Match(r =>
         {

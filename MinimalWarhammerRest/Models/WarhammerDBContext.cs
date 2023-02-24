@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace MinimalWarhammerRest.Models
 {
     public partial class WarhammerDBContext : DbContext
     {
-
         public WarhammerDBContext(DbContextOptions<WarhammerDBContext> options)
             : base(options)
         {

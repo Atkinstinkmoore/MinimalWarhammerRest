@@ -1,14 +1,12 @@
-﻿
-using LanguageExt.Common;
+﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using MinimalWarhammerRest.Domain;
 using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Exceptions;
 using MinimalWarhammerRest.Models;
 
 namespace MinimalWarhammerRest.Services;
 
-public class FactionService : IFactionService
+public sealed class FactionService : IFactionService
 {
     private readonly WarhammerDBContext _context;
 
@@ -16,17 +14,17 @@ public class FactionService : IFactionService
     {
         _context = context;
     }
+
     public async Task<Result<bool>> Create(string name)
     {
-        var exists = await _context.Factions.SingleOrDefaultAsync(f => f.FactionName == name);
+        var exists =  await _context.Factions.SingleOrDefaultAsync(f => f.FactionName == name);
 
         if (exists is not null) return false;
 
         var faction = new Faction() { FactionName = name };
         var result = _context.Factions.Add(faction);
-        var _ = await _context.SaveChangesAsync();
+        var _ =  await _context.SaveChangesAsync();
         return true;
-
     }
 
     public async Task<Result<bool>> Delete(int id)
@@ -38,11 +36,9 @@ public class FactionService : IFactionService
             var _ = _context.Remove(exists);
             var result = await _context.SaveChangesAsync();
             if (result > 0) return true;
-
         }
 
         return false;
-
     }
 
     public async Task<Result<FactionDTO>> Get(int id)

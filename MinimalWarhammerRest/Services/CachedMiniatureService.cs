@@ -5,7 +5,7 @@ using MinimalWarhammerRest.Domain.Requests;
 
 namespace MinimalWarhammerRest.Services;
 
-public class CachedMiniatureService : IMiniatureService
+public sealed class CachedMiniatureService : IMiniatureService
 {
     private readonly IMiniatureService _service;
     private readonly IMemoryCache _cache;
@@ -23,14 +23,15 @@ public class CachedMiniatureService : IMiniatureService
 
     public async Task<Result<MiniatureDTO>> Get(int id)
     {
-        var isCached = _cache.TryGetValue("miniature" + id.ToString(), out MiniatureDTO value);
+        var isCached = _cache.TryGetValue("miniature_get_" + id.ToString(), out MiniatureDTO value);
         if (isCached)
             return new Result<MiniatureDTO>(value);
-        var result = await _service.Get(id);
+        var result =  await _service.Get(id);
 
         return result.Match(r =>
         {
-            _cache.Set("miniature" + id.ToString(), r, TimeSpan.FromMinutes(5));
+            var policy = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            _cache.Set("miniature_get_" + id.ToString(), r, policy);
             return result;
         }, ex =>
         {

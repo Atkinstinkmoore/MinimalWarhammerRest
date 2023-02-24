@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MinimalWarhammerRest.Models
+﻿namespace MinimalWarhammerRest.Models
 {
     public partial class Figure
     {
