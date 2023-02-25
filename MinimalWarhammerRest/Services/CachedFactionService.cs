@@ -34,10 +34,10 @@ public sealed class CachedFactionService : IFactionService
         if (isCached)
             return new Result<FactionDetailsDTO>(value);
 
-        var result =  await _factionService.Get(id).ConfigureAwait(false);
+        var result =  await _factionService.Get(id);
         return result.Match(r =>
         {
-            var policy = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
+            var policy = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
             _cache.Set("faction_get_" + id.ToString(), r, policy);
             return result;
         }, ex =>
@@ -52,7 +52,7 @@ public sealed class CachedFactionService : IFactionService
         if (cachedItem)
             return value;
 
-        var result = await _factionService.GetAll().ConfigureAwait(false);
+        var result = await _factionService.GetAll();
         if (result.Any())
         {
             var policy = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
