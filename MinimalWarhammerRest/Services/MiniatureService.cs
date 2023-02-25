@@ -16,11 +16,14 @@ public sealed class MiniatureService : IMiniatureService
         _context = context;
     }
 
-    public async Task<Result<bool>> Create(CreateMiniatureRequest req)
+    public async Task<Result<MiniatureDTO>> Create(CreateMiniatureRequest req)
     {
         var exists = _context.Figures.SingleOrDefault(m => m.FigureName.ToUpper() == req.Name.ToUpper());
 
-        if (exists is not null || !(req.Amount > 0)) return false;
+        if (exists is not null || !(req.Amount > 0))
+        {
+            return new Result<MiniatureDTO>(new CouldNotCreateException(nameof(Faction)));
+        }
 
         await _context.Factions.LoadAsync();
 
@@ -28,12 +31,15 @@ public sealed class MiniatureService : IMiniatureService
         if (factionIds.Contains(req.FactionId) && factionIds.Contains(req.SubfactionId))
         {
             var toSave = new Figure() { FigureName = req.Name, Amount = (int)req.Amount, FactionId = req.FactionId, SubfactionId = req.SubfactionId };
-            _context.Figures.Add(toSave);
+            var result = _context.Figures.Add(toSave);
             var _ = await _context.SaveChangesAsync();
-            return new Result<bool>(true);
+            return new Result<MiniatureDTO>(new MiniatureDTO(result.Entity.FigureId,
+                                                             result.Entity.FigureName,
+                                                             result.Entity.Amount,
+                                                             result.Entity.Faction.FactionName,
+                                                             result.Entity.Subfaction.FactionName));
         }
-        var ex = new CouldNotCreateException(nameof(Faction));
-        return new Result<bool>(ex);
+        return new Result<MiniatureDTO>(new CouldNotCreateException(nameof(Faction)));
     }
 
     public async Task<Result<MiniatureDTO>> Get(int id)

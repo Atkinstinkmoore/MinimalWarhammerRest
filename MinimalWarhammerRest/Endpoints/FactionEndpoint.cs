@@ -10,7 +10,7 @@ public static class FactionEndpoint
 {
     public static void MapFactionEndpoints(this WebApplication app)
     {
-        app.MapGet("api/faction/{id:int}", GetFactionById).Produces(200, typeof(ResponseDTO<FactionDTO>)).Produces(404);
+        app.MapGet("api/faction/{id:int}", GetFactionById).Produces(200, typeof(ResponseDTO<FactionDetailsDTO>)).Produces(404);
         app.MapPost("api/faction", CreateFaction).Produces(204).Produces(400, typeof(EmptyResponseDTO));
         app.MapDelete("api/faction/{id:int}", DeleteFaction).Produces(200, typeof(EmptyResponseDTO)).Produces(400, typeof(EmptyResponseDTO));
         app.MapGet("api/all-factions", GetAllFactions).Produces(200, typeof(ResponseDTO<IEnumerable<FactionDTO>>));
@@ -22,7 +22,7 @@ public static class FactionEndpoint
 
         return result.Match(r =>
         {
-            return Results.Ok(new ResponseDTO<FactionDTO>(r));
+            return Results.Ok(new ResponseDTO<FactionDetailsDTO>(r));
         }, ex =>
         {
             if (ex is FactionNotFoundException)

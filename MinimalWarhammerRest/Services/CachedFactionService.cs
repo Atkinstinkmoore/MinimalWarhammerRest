@@ -28,11 +28,11 @@ public sealed class CachedFactionService : IFactionService
         return _factionService.Delete(id);
     }
 
-    public async Task<Result<FactionDTO>> Get(int id)
+    public async Task<Result<FactionDetailsDTO>> Get(int id)
     {
-        var isCached = _cache.TryGetValue("faction_get_" + id.ToString(), out FactionDTO value);
+        var isCached = _cache.TryGetValue("faction_get_" + id.ToString(), out FactionDetailsDTO value);
         if (isCached)
-            return new Result<FactionDTO>(value);
+            return new Result<FactionDetailsDTO>(value);
 
         var result =  await _factionService.Get(id).ConfigureAwait(false);
         return result.Match(r =>

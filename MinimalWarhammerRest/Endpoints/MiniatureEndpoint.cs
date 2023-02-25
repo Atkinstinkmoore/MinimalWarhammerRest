@@ -1,4 +1,5 @@
-﻿using MinimalWarhammerRest.Domain;
+﻿using LanguageExt.ClassInstances;
+using MinimalWarhammerRest.Domain;
 using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Exceptions;
 using MinimalWarhammerRest.Domain.Requests;
@@ -11,7 +12,7 @@ public static class MiniatureEndpoint
     public static void MapMiniatureEndpoints(this WebApplication app)
     {
         app.MapGet("api/mini/{id:int}", GetMiniature).Produces(200, typeof(ResponseDTO<MiniatureDTO>)).Produces(404, typeof(ResponseDTO<string>));
-        app.MapPost("api/mini", CreateMiniature).Produces(201, typeof(EmptyResponseDTO)).Produces(400, typeof(ResponseDTO<string>));
+        app.MapPost("api/mini", CreateMiniature).Produces(201).Produces(400, typeof(ResponseDTO<string>));
         app.MapGet("api/all-minis", GetAllMiniatures).Produces(200, typeof(ResponseDTO<IEnumerable<MiniatureDTO>>));
     }
 
@@ -44,7 +45,7 @@ public static class MiniatureEndpoint
 
         return result.Match(r =>
         {
-            return Results.Ok(new EmptyResponseDTO());
+            return Results.Created("api/mini/" + r.Id, r);
         }, ex =>
         {
             if (ex is CouldNotCreateException)

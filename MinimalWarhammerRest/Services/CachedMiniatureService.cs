@@ -16,7 +16,7 @@ public sealed class CachedMiniatureService : IMiniatureService
         _cache = cache;
     }
 
-    public Task<Result<bool>> Create(CreateMiniatureRequest req)
+    public Task<Result<MiniatureDTO>> Create(CreateMiniatureRequest req)
     {
         return _service.Create(req);
     }

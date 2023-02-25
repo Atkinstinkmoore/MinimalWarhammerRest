@@ -41,17 +41,18 @@ public sealed class FactionService : IFactionService
         return false;
     }
 
-    public async Task<Result<FactionDTO>> Get(int id)
+    public async Task<Result<FactionDetailsDTO>> Get(int id)
     {
         var result = await _context.Factions.FindAsync(id);
 
         if (result is not null)
         {
-            var faction = new FactionDTO(result.FactionId, result.FactionName);
-            return new Result<FactionDTO>(faction);
+            var count = _context.Figures.Where(m => m.FactionId == id || m.SubfactionId == id).Sum(m => m.Amount);
+            var faction = new FactionDetailsDTO(result.FactionId, result.FactionName, count);
+            return new Result<FactionDetailsDTO>(faction);
         }
         var ex = new FactionNotFoundException(id);
-        return new Result<FactionDTO>(ex);
+        return new Result<FactionDetailsDTO>(ex);
     }
 
     public async Task<IEnumerable<FactionDTO>> GetAll()
