@@ -6,6 +6,7 @@ using MinimalWarhammerRest.Factions;
 using MinimalWarhammerRest.Miniatures;
 using MinimalWarhammerRest.Models;
 using MinimalWarhammerRest.Services.TimeService;
+using MinimalWarhammerRest.StructuredLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ var app = builder.Build();
 
 app.MapFactionEndpoints();
 app.MapMiniatureEndpoints();
-
+app.UseStructuredLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
