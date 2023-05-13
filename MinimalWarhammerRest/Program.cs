@@ -30,12 +30,16 @@ var app = builder.Build();
 
 app.MapFactionEndpoints();
 app.MapMiniatureEndpoints();
+
 app.UseStructuredLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(op =>
+    {
+        op.DisplayRequestDuration();
+    });
 }
 
 app.Run();

@@ -48,7 +48,7 @@ public class ReponseFactory : IResponseFactory
 
     private static string GetRequestId()
     {
-        return Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        return Activity.Current!.TraceId.ToString();
     }
 }
 
