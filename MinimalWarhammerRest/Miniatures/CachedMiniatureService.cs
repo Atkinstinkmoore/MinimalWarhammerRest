@@ -1,9 +1,7 @@
 ﻿using LanguageExt.Common;
 using Microsoft.Extensions.Caching.Memory;
-using MinimalWarhammerRest.Domain.DTOs;
-using MinimalWarhammerRest.Domain.Requests;
 
-namespace MinimalWarhammerRest.Services;
+namespace MinimalWarhammerRest.Miniatures;
 
 public sealed class CachedMiniatureService : IMiniatureService
 {
@@ -26,7 +24,7 @@ public sealed class CachedMiniatureService : IMiniatureService
         var isCached = _cache.TryGetValue("miniature_get_" + id.ToString(), out MiniatureDTO value);
         if (isCached)
             return new Result<MiniatureDTO>(value);
-        var result =  await _service.Get(id);
+        var result = await _service.Get(id);
 
         return result.Match(r =>
         {

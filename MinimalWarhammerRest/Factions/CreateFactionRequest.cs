@@ -1,4 +1,4 @@
-﻿namespace MinimalWarhammerRest.Domain.Requests
+﻿namespace MinimalWarhammerRest.Factions
 {
     public struct CreateFactionRequest
     {

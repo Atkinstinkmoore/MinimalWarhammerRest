@@ -1,27 +1,59 @@
-﻿using System.Diagnostics;
+﻿using MinimalWarhammerRest.Services.TimeService;
+using System.Diagnostics;
 
 namespace MinimalWarhammerRest.Domain;
 
-public struct ResponseDTO<T>
+public sealed record ResponseDTO<T>
 {
     public T Data { get; init; }
-    public DateTime TimeStamp { get; } = DateTime.UtcNow;
-    public string RequestId { get; set; }
+    public DateTimeOffset TimeStamp { get; init; }
+    public string RequestId { get; init; }
 
-    public ResponseDTO(T data)
+    internal ResponseDTO(T data, DateTimeOffset timeStamp, string requestId)
     {
         Data = data;
-        RequestId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        RequestId = requestId;
+        TimeStamp = timeStamp;
     }
 }
 
-public struct EmptyResponseDTO
+public sealed record EmptyResponseDTO
 {
-    public DateTime TimeStamp { get; } = DateTime.UtcNow;
+    public DateTimeOffset TimeStamp { get; init; }
     public string RequestId { get; init; }
-    public EmptyResponseDTO()
+    internal EmptyResponseDTO(DateTimeOffset timeStamp, string requestId)
     {
-        RequestId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        RequestId = requestId;
+        TimeStamp = timeStamp;
+    }
+}
+
+public class ReponseFactory : IResponseFactory
+{
+    private readonly ITimeService _timeService;
+
+    public ReponseFactory(ITimeService timeService)
+    {
+        _timeService = timeService;
+    }
+    public EmptyResponseDTO Create()
+    {
+        return new EmptyResponseDTO(DateTimeOffset.UtcNow, GetRequestId());
     }
 
+    public ResponseDTO<object> Create(object data)
+    {
+        return new ResponseDTO<object>(data, _timeService.GetCurrentTime(), GetRequestId());
+    }
+
+    private static string GetRequestId()
+    {
+        return Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+    }
+}
+
+public interface IResponseFactory
+{
+    EmptyResponseDTO Create();
+    ResponseDTO<object> Create(object data);
 }

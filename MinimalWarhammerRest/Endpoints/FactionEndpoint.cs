@@ -1,8 +1,6 @@
 ﻿using MinimalWarhammerRest.Domain;
-using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Exceptions;
-using MinimalWarhammerRest.Domain.Requests;
-using MinimalWarhammerRest.Services;
+using MinimalWarhammerRest.Factions;
 
 namespace MinimalWarhammerRest.Endpoints;
 
@@ -16,42 +14,42 @@ public static class FactionEndpoint
         app.MapGet("api/all-factions", GetAllFactions).Produces(200, typeof(ResponseDTO<IEnumerable<FactionDTO>>));
     }
 
-    internal static async Task<IResult> GetFactionById(IFactionService service, int id)
+    internal static async Task<IResult> GetFactionById(IFactionService service, IResponseFactory factory, int id)
     {
         var result = await service.Get(id);
 
         return result.Match(r =>
         {
-            return Results.Ok(new ResponseDTO<FactionDetailsDTO>(r));
+            return Results.Ok(factory.Create(r));
         }, ex =>
         {
             if (ex is FactionNotFoundException)
-                return Results.NotFound(new ResponseDTO<string>(ex.Message));
+                return Results.NotFound(factory.Create(ex.Message));
 
             return Results.StatusCode(500);
         });
     }
 
-    internal static async Task<IResult> CreateFaction(IFactionService service, CreateFactionRequest req)
+    internal static async Task<IResult> CreateFaction(IFactionService service, IResponseFactory factory, CreateFactionRequest req)
     {
         var result = await service.Create(req.Name);
 
         if (result.IsSuccess)
-            return Results.Ok(new EmptyResponseDTO());
+            return Results.Ok(factory.Create());
 
-        return Results.BadRequest(new EmptyResponseDTO());
+        return Results.BadRequest(factory.Create());
     }
 
-    internal static async Task<IResult> GetAllFactions(IFactionService service)
+    internal static async Task<IResult> GetAllFactions(IFactionService service, IResponseFactory factory)
     {
         var result = await service.GetAll();
 
-        return Results.Ok(new ResponseDTO<IEnumerable<FactionDTO>>(result));
+        return Results.Ok(factory.Create(result));
     }
 
-    internal static async Task<IResult> DeleteFaction(IFactionService service, int id)
+    internal static async Task<IResult> DeleteFaction(IFactionService service, IResponseFactory factory, int id)
     {
         var result = await service.Delete(id);
-        return result.IsSuccess ? Results.Ok(new EmptyResponseDTO()) : Results.BadRequest(new EmptyResponseDTO());
+        return result.IsSuccess ? Results.Ok(factory.Create()) : Results.BadRequest(factory.Create());
     }
 }

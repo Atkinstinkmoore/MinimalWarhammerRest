@@ -1,9 +1,6 @@
-﻿using LanguageExt.ClassInstances;
-using MinimalWarhammerRest.Domain;
-using MinimalWarhammerRest.Domain.DTOs;
+﻿using MinimalWarhammerRest.Domain;
 using MinimalWarhammerRest.Domain.Exceptions;
-using MinimalWarhammerRest.Domain.Requests;
-using MinimalWarhammerRest.Services;
+using MinimalWarhammerRest.Miniatures;
 
 namespace MinimalWarhammerRest.Endpoints;
 
@@ -16,40 +13,40 @@ public static class MiniatureEndpoint
         app.MapGet("api/all-minis", GetAllMiniatures).Produces(200, typeof(ResponseDTO<IEnumerable<MiniatureDTO>>));
     }
 
-    public static async Task<IResult> GetMiniature(IMiniatureService service, int id)
+    public static async Task<IResult> GetMiniature(IMiniatureService service, IResponseFactory factory, int id)
     {
         var result = await service.Get(id);
 
         return result.Match(r =>
         {
-            return Results.Ok(new ResponseDTO<MiniatureDTO>(r));
+            return Results.Ok(factory.Create(r));
         }, ex =>
         {
             if (ex is MiniatureNotFoundException)
-                return Results.NotFound(new ResponseDTO<string>(ex.Message));
+                return Results.NotFound(factory.Create(ex.Message));
 
-            return Results.StatusCode(500);
+            return Results.BadRequest(factory.Create());
         });
     }
 
-    public static async Task<IResult> GetAllMiniatures(IMiniatureService service)
+    public static async Task<IResult> GetAllMiniatures(IMiniatureService service, IResponseFactory factory)
     {
         var result = await service.GetAll();
 
-        return Results.Ok(new ResponseDTO<IEnumerable<MiniatureDTO>>(result));
+        return Results.Ok(factory.Create(result));
     }
 
-    public static async Task<IResult> CreateMiniature(IMiniatureService service, CreateMiniatureRequest req)
+    public static async Task<IResult> CreateMiniature(IMiniatureService service, IResponseFactory factory, CreateMiniatureRequest req)
     {
         var result = await service.Create(req);
 
         return result.Match(r =>
         {
-            return Results.Created("api/mini/" + r.Id, r);
+            return Results.Created("api/mini/" + r.Id, factory.Create(r));
         }, ex =>
         {
             if (ex is CouldNotCreateException)
-                return Results.BadRequest(new ResponseDTO<string>(ex.Message));
+                return Results.BadRequest(factory.Create(ex.Message));
 
             return Results.BadRequest();
         });

@@ -1,11 +1,9 @@
 ﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Exceptions;
-using MinimalWarhammerRest.Domain.Requests;
 using MinimalWarhammerRest.Models;
 
-namespace MinimalWarhammerRest.Services;
+namespace MinimalWarhammerRest.Miniatures;
 
 public sealed class MiniatureService : IMiniatureService
 {
@@ -30,7 +28,7 @@ public sealed class MiniatureService : IMiniatureService
         var factionIds = _context.Factions.Select(f => f.FactionId);
         if (factionIds.Contains(req.FactionId) && factionIds.Contains(req.SubfactionId))
         {
-            var toSave = new Figure() { FigureName = req.Name, Amount = (int)req.Amount, FactionId = req.FactionId, SubfactionId = req.SubfactionId };
+            var toSave = new Figure() { FigureName = req.Name, Amount = req.Amount, FactionId = req.FactionId, SubfactionId = req.SubfactionId };
             var result = _context.Figures.Add(toSave);
             var _ = await _context.SaveChangesAsync();
             return new Result<MiniatureDTO>(new MiniatureDTO(result.Entity.FigureId,

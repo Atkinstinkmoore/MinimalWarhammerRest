@@ -1,10 +1,9 @@
 ﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using MinimalWarhammerRest.Domain.DTOs;
 using MinimalWarhammerRest.Domain.Exceptions;
 using MinimalWarhammerRest.Models;
 
-namespace MinimalWarhammerRest.Services;
+namespace MinimalWarhammerRest.Factions;
 
 public sealed class FactionService : IFactionService
 {
@@ -17,13 +16,13 @@ public sealed class FactionService : IFactionService
 
     public async Task<Result<bool>> Create(string name)
     {
-        var exists =  await _context.Factions.SingleOrDefaultAsync(f => f.FactionName == name);
+        var exists = await _context.Factions.SingleOrDefaultAsync(f => f.FactionName == name);
 
         if (exists is not null) return false;
 
         var faction = new Faction() { FactionName = name };
         var result = _context.Factions.Add(faction);
-        var _ =  await _context.SaveChangesAsync();
+        var _ = await _context.SaveChangesAsync();
         return true;
     }
 

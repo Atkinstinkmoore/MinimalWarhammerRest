@@ -1,9 +1,7 @@
 ﻿using LanguageExt.Common;
 using MinimalWarhammerRest.Domain;
-using MinimalWarhammerRest.Domain.DTOs;
-using MinimalWarhammerRest.Domain.Requests;
 
-namespace MinimalWarhammerRest.Services
+namespace MinimalWarhammerRest.Miniatures
 {
     public interface IMiniatureService
     {

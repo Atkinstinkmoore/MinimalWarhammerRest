@@ -1,8 +1,7 @@
 ﻿using LanguageExt.Common;
 using Microsoft.Extensions.Caching.Memory;
-using MinimalWarhammerRest.Domain.DTOs;
 
-namespace MinimalWarhammerRest.Services;
+namespace MinimalWarhammerRest.Factions;
 
 public sealed class CachedFactionService : IFactionService
 {
@@ -34,7 +33,7 @@ public sealed class CachedFactionService : IFactionService
         if (isCached)
             return new Result<FactionDetailsDTO>(value);
 
-        var result =  await _factionService.Get(id);
+        var result = await _factionService.Get(id);
         return result.Match(r =>
         {
             var policy = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5));

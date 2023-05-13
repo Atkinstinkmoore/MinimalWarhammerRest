@@ -1,7 +1,6 @@
 ﻿using LanguageExt.Common;
-using MinimalWarhammerRest.Domain.DTOs;
 
-namespace MinimalWarhammerRest.Services
+namespace MinimalWarhammerRest.Factions
 {
     public interface IFactionService
     {

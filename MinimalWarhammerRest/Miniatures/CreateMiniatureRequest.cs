@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MinimalWarhammerRest.Domain.Requests
+namespace MinimalWarhammerRest.Miniatures
 {
     public struct CreateMiniatureRequest
     {
