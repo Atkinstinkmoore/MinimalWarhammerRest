@@ -1,5 +1,4 @@
 ﻿using MinimalWarhammerRest.Services.TimeService;
-using System.Diagnostics;
 
 namespace MinimalWarhammerRest.Domain;
 
@@ -7,12 +6,10 @@ public sealed record ResponseDTO<T>
 {
     public T Data { get; init; }
     public DateTimeOffset TimeStamp { get; init; }
-    public string RequestId { get; init; }
 
-    internal ResponseDTO(T data, DateTimeOffset timeStamp, string requestId)
+    internal ResponseDTO(T data, DateTimeOffset timeStamp)
     {
         Data = data;
-        RequestId = requestId;
         TimeStamp = timeStamp;
     }
 }
@@ -20,10 +17,9 @@ public sealed record ResponseDTO<T>
 public sealed record EmptyResponseDTO
 {
     public DateTimeOffset TimeStamp { get; init; }
-    public string RequestId { get; init; }
-    internal EmptyResponseDTO(DateTimeOffset timeStamp, string requestId)
+
+    internal EmptyResponseDTO(DateTimeOffset timeStamp)
     {
-        RequestId = requestId;
         TimeStamp = timeStamp;
     }
 }
@@ -36,24 +32,21 @@ public class ReponseFactory : IResponseFactory
     {
         _timeService = timeService;
     }
+
     public EmptyResponseDTO Create()
     {
-        return new EmptyResponseDTO(DateTimeOffset.UtcNow, GetRequestId());
+        return new EmptyResponseDTO(_timeService.GetCurrentTime());
     }
 
     public ResponseDTO<object> Create(object data)
     {
-        return new ResponseDTO<object>(data, _timeService.GetCurrentTime(), GetRequestId());
-    }
-
-    private static string GetRequestId()
-    {
-        return Activity.Current!.TraceId.ToString();
+        return new ResponseDTO<object>(data, _timeService.GetCurrentTime());
     }
 }
 
 public interface IResponseFactory
 {
     EmptyResponseDTO Create();
+
     ResponseDTO<object> Create(object data);
 }

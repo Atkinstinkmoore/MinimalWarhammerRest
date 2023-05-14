@@ -7,11 +7,17 @@ using MinimalWarhammerRest.Miniatures;
 using MinimalWarhammerRest.Models;
 using MinimalWarhammerRest.Services.TimeService;
 using MinimalWarhammerRest.StructuredLogging;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Logging.ClearProviders();
+var logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateLogger();
+
+builder.Logging.AddSerilog(logger);
+
 builder.Services.AddDbContext<WarhammerDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<FactionService>();
@@ -32,7 +38,7 @@ app.MapFactionEndpoints();
 app.MapMiniatureEndpoints();
 
 app.UseStructuredLogging();
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
