@@ -22,22 +22,20 @@ public sealed class FactionService : IFactionService
 
         var faction = new Faction() { FactionName = name };
         var result = _context.Factions.Add(faction);
-        var _ = await _context.SaveChangesAsync();
-        return true;
+        var saved = await _context.SaveChangesAsync();
+
+        return saved > 0;
     }
 
     public async Task<Result<bool>> Delete(int id)
     {
         var exists = await _context.Factions.FindAsync(id);
 
-        if (exists is not null)
-        {
-            var _ = _context.Remove(exists);
-            var result = await _context.SaveChangesAsync();
-            if (result > 0) return true;
-        }
+        if (exists is null) return false;
 
-        return false;
+        var _ = _context.Remove(exists);
+        var result = await _context.SaveChangesAsync();
+        return result > 0;
     }
 
     public async Task<Result<FactionDetailsDTO>> Get(int id)

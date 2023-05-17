@@ -1,7 +1,10 @@
-﻿namespace MinimalWarhammerRest.Factions
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MinimalWarhammerRest.Factions
 {
-    public struct CreateFactionRequest
+    public sealed class CreateFactionRequest
     {
-        public string Name { get; init; }
+        [Required]
+        public string Name { get; init; } = default!;
     }
 }

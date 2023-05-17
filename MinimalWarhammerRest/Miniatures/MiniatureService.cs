@@ -46,7 +46,6 @@ public sealed class MiniatureService : IMiniatureService
 
         if (result is not null)
         {
-            await _context.Factions.LoadAsync();
             var mini = new MiniatureDTO(result.FigureId, result.FigureName, result.Amount, result.Faction.FactionName, result.Subfaction.FactionName);
             return new Result<MiniatureDTO>(mini);
         }
@@ -57,7 +56,6 @@ public sealed class MiniatureService : IMiniatureService
     public async Task<IEnumerable<MiniatureDTO>> GetAll()
     {
         await _context.Figures.LoadAsync();
-        await _context.Factions.LoadAsync();
 
         return _context.Figures.Select(m => new MiniatureDTO(m.FigureId, m.FigureName, m.Amount, m.Faction.FactionName, m.Subfaction.FactionName));
     }
